@@ -1,0 +1,7 @@
+# Lean deps for the deployed voice server (no local-mic packages — the phone
+# is the mic, so sounddevice/soundfile/numpy/PortAudio are NOT needed here).
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+openai>=1.40
+elevenlabs>=1.5

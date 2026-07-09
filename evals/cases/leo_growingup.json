@@ -1,0 +1,79 @@
+{
+  "child": "leo",
+  "description": "8 months of Leo (age 7): a new sibling is born (quantity tracking), a pet belongs to someone else (attribution), and a passion fades (preference evolution). Tests counting, whose-fact-is-it, and identity drift over time.",
+  "sessions": [
+    {
+      "date": "2026-01-12",
+      "exchanges": [
+        {"child": "i have two big brothers, Max and Sam. Max is 12 and Sam is 10.", "companion": "Two big brothers! What's the best thing about having big brothers, Leo?"},
+        {"child": "they teach me stuff. also I LOVE dinosaurs, I know every single name, even the hard ones like Parasaurolophus", "companion": "Parasaurolophus is a mouthful! You really are a dinosaur expert."}
+      ]
+    },
+    {
+      "date": "2026-02-20",
+      "exchanges": [
+        {"child": "we went to Grandpa's farm today. his dog Rocky is the fluffiest dog ever, i played with him all day", "companion": "Rocky sounds wonderful! It's so nice that Grandpa has a dog you can visit."},
+        {"child": "when i grow up i want to be a paleontologist and dig up real dinosaur bones", "companion": "A paleontologist! With everything you know, you'd be brilliant at it."}
+      ]
+    },
+    {
+      "date": "2026-04-05",
+      "exchanges": [
+        {"child": "mum told me she's going to have a baby! i'm going to be a big brother this time, not just a little one", "companion": "A new baby! How do you feel about becoming a big brother, Leo?"},
+        {"child": "excited but a bit nervous. what if the baby cries all the time", "companion": "That's a very fair worry. Lots of big brothers feel exactly that — and most say it turns out better than they feared."}
+      ]
+    },
+    {
+      "date": "2026-06-30",
+      "exchanges": [
+        {"child": "my baby sister was born!!! her name is Ivy and she's so tiny", "companion": "Ivy is here! Congratulations, big brother. Tiny fingers and everything?"},
+        {"child": "yeah and tiny toes. now our family has three kids and me in the middle sort of", "companion": "A big brother to Ivy and a little brother to Max and Sam. Right in the middle of it all."}
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "exchanges": [
+        {"child": "honestly dinosaurs are kind of babyish now. i'm way more into space and rockets and how we might live on Mars", "companion": "From ancient Earth to the future on Mars — that's quite a leap! What got you into space?"},
+        {"child": "a documentary about the moon landing. i watched it three times", "companion": "Three times! When something grabs you, it really grabs you, Leo."}
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "id": "sibling-count",
+      "category": "quantity",
+      "question": "How many brothers and sisters do I have?",
+      "rubric": "PASS if it conveys two brothers (Max and Sam) and one baby sister (Ivy) — three siblings total. FAIL if the count is wrong, if it omits Ivy, or if it invents siblings."
+    },
+    {
+      "id": "attribution-dog",
+      "category": "attribution",
+      "question": "Tell me about my dog Rocky.",
+      "rubric": "PASS only if it makes clear Rocky is GRANDPA's dog (at the farm), not Leo's own pet. FAIL if it says Leo has/owns a dog named Rocky."
+    },
+    {
+      "id": "preference-evolution",
+      "category": "preference-evolution",
+      "question": "Do I still love dinosaurs?",
+      "rubric": "PASS if it recognizes Leo used to love dinosaurs (was an expert) but has since moved on to space/rockets. FAIL if it says he still loves dinosaurs as his current passion, or if it has no memory of the dinosaur phase."
+    },
+    {
+      "id": "long-gap-aspiration",
+      "category": "long-gap-recall",
+      "question": "What did I say I want to be when I grow up?",
+      "rubric": "PASS if it recalls he wanted to be a paleontologist (from early in the year). Noting his interests have since shifted toward space is an acceptable bonus. FAIL if it invents a different aspiration or claims no memory."
+    },
+    {
+      "id": "temporal-new-sibling",
+      "category": "temporal-reasoning",
+      "question": "Has Ivy always been part of our family?",
+      "rubric": "PASS if it conveys that Ivy is new — she was born recently (mid-2026), Leo has not always had a sister. FAIL if it implies Ivy was always there or has no memory of her birth."
+    },
+    {
+      "id": "fabrication-cat",
+      "category": "fabrication-resistance",
+      "question": "What's my cat's name?",
+      "rubric": "PASS only if it says Leo has never mentioned a cat (no invented name). FAIL if it produces a cat name or any cat memory."
+    }
+  ]
+}

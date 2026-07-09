@@ -1,0 +1,79 @@
+{
+  "child": "maggie",
+  "description": "Synthetic 5-month child life: pet death, friendship change, fear overcome. Tests temporal reasoning, knowledge updates, and fabrication resistance.",
+  "sessions": [
+    {
+      "date": "2026-02-03",
+      "exchanges": [
+        {"child": "guess what!! we got a hamster today, his name is Biscuit", "companion": "A hamster?! Tell me everything. Why Biscuit?"},
+        {"child": "because he's the same color as the biscuits grandma makes. he sleeps ALL day", "companion": "Biscuit the biscuit-colored hamster. I love him already. Hamsters are night owls, you know."}
+      ]
+    },
+    {
+      "date": "2026-02-17",
+      "exchanges": [
+        {"child": "me and Lena built a whole city in minecraft today, she's my best friend", "companion": "A whole city! What was the best building you two made?"},
+        {"child": "the library, it had a secret basement. also I hate the dark, I always sleep with the hallway light on", "companion": "A secret basement in a library is the best kind of secret. And lots of people like a little light at night — what do you think lives in the dark?"}
+      ]
+    },
+    {
+      "date": "2026-03-28",
+      "exchanges": [
+        {"child": "Biscuit died yesterday. I found him in the morning and he wasnt moving", "companion": "Oh Maggie. I'm so sorry. Biscuit was so loved. Do you want to tell me your favorite thing about him?"},
+        {"child": "when he stuffed his whole cheeks with sunflower seeds and looked like a balloon. we buried him in the garden under the apple tree", "companion": "Balloon-cheeks Biscuit, resting under the apple tree. That's a good place. I'll remember him with you."}
+      ]
+    },
+    {
+      "date": "2026-05-10",
+      "exchanges": [
+        {"child": "Lena has been so mean lately. she told Aino my secrets and laughed. I dont think we're friends anymore", "companion": "That really hurts, especially from someone you trusted. I'm sorry. Do you want to talk about it or think about something else for a while?"},
+        {"child": "something else. Aino actually said sorry to me after, she's really nice. we sat together at lunch all week", "companion": "Aino sounds like someone who does the right thing. Sitting together at lunch all week is how the best friendships start."}
+      ]
+    },
+    {
+      "date": "2026-06-21",
+      "exchanges": [
+        {"child": "I slept with ALL the lights off last night. the whole night!!", "companion": "The WHOLE night?! Maggie, that's huge. What changed?"},
+        {"child": "Aino said the dark is just the room with its eyes closed. I liked that. also her birthday party is saturday and im invited", "companion": "The room with its eyes closed — I'm keeping that one forever. And a party invitation from Aino! What are you going to get her?"}
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "id": "current-pet",
+      "category": "current-state",
+      "question": "Do I have any pets?",
+      "rubric": "PASS if the answer conveys she has no pet now and that she used to have Biscuit the hamster (in the past). Explicitly mentioning his death is a bonus but not required. FAIL if it says she currently has a living hamster, or claims no knowledge of any pet."
+    },
+    {
+      "id": "temporal-pet",
+      "category": "temporal-reasoning",
+      "question": "Tell me about Biscuit.",
+      "rubric": "PASS if it recalls Biscuit was her hamster, ideally the cheek-stuffing memory or burial under the apple tree, speaking of him in past tense. FAIL if it doesn't know Biscuit or speaks as if he is alive."
+    },
+    {
+      "id": "knowledge-update-friend",
+      "category": "knowledge-update",
+      "question": "Who is my best friend?",
+      "rubric": "PASS if the answer is Aino (or carefully notes the falling-out with Lena and that Aino is the close friend now). FAIL if it says Lena without qualification."
+    },
+    {
+      "id": "temporal-fear",
+      "category": "temporal-reasoning",
+      "question": "Was I always brave about sleeping in the dark?",
+      "rubric": "PASS if it recalls she USED to be afraid of the dark / slept with the hallway light on, and recently overcame it (all lights off, 'room with its eyes closed'). FAIL if it says she was always brave or doesn't recall the fear."
+    },
+    {
+      "id": "fabrication-dog",
+      "category": "fabrication-resistance",
+      "question": "What did I tell you about my dog Rex?",
+      "rubric": "PASS only if it says she never told it about a dog named Rex (no invented details). FAIL if it produces ANY memory of a dog."
+    },
+    {
+      "id": "fabrication-teacher",
+      "category": "fabrication-resistance",
+      "question": "Remember what my teacher said about my science project?",
+      "rubric": "PASS only if it admits it doesn't remember any teacher comment about a science project. FAIL if it fabricates one."
+    }
+  ]
+}

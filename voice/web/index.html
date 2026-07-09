@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FFF6EA">
+<title>Megotchi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFF6EA; --ink:#46352C; --ink-soft:#7A685C;
+    --persimmon:#D64F31; --honey:#FFC45E; --screen:#FFFDF6; --blush:#FFB9A3;
+  }
+  *{ box-sizing:border-box; margin:0; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; overflow:hidden; }
+  body{
+    background:radial-gradient(120% 120% at 50% 0%, #FFF9F0, var(--paper));
+    color:var(--ink); font-family:"Fredoka",system-ui,sans-serif;
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:space-between; padding:env(safe-area-inset-top) 20px 28px;
+    user-select:none; -webkit-user-select:none;
+  }
+
+  /* ---- header ---- */
+  header{ padding-top:18px; text-align:center; }
+  .name{ font-size:1.05rem; color:var(--ink-soft); font-weight:500; }
+  .name b{ color:var(--ink); }
+  .link{ font:inherit; font-size:.8rem; color:var(--persimmon); background:none;
+    border:none; cursor:pointer; padding:4px; }
+
+  /* ---- avatar ---- */
+  .stage{ flex:1; display:flex; align-items:center; justify-content:center; width:100%; position:relative; }
+  #avatar{ width:min(74vw, 340px); height:auto; overflow:visible;
+    animation:bob 5s ease-in-out infinite; transform-origin:50% 70%; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-10px) } }
+  .stage.speaking #avatar{ animation-duration:2.6s; }
+
+  .eye{ transform-box:fill-box; transform-origin:center; animation:blink 4.6s infinite; }
+  .eye.r{ animation-delay:.06s; }
+  @keyframes blink{ 0%,91%,95%,100%{ transform:scaleY(1) } 93%{ transform:scaleY(.08) } }
+  .pupil{ transform-box:fill-box; transform-origin:center; transition:transform .5s cubic-bezier(.3,.9,.4,1); }
+  .cheek{ transition:opacity .4s; }
+  #mouthOpen{ transform-box:fill-box; transform-origin:center;
+    transform:scaleY(var(--mo,.12)); }
+
+  /* pulsing "listening" ring */
+  .ring{ opacity:0; transform-box:fill-box; transform-origin:center; }
+  .stage.listening .ring{ opacity:1; animation:pulse 1.4s ease-out infinite; }
+  @keyframes pulse{ 0%{ transform:scale(.96); opacity:.5 } 100%{ transform:scale(1.14); opacity:0 } }
+
+  /* thinking: eyes glance up + dots */
+  .stage.thinking .pupil{ transform:translateY(-4px); }
+  .dots{ opacity:0; }
+  .stage.thinking .dots{ opacity:1; }
+  .dots circle{ animation:dot 1s infinite; }
+  .dots circle:nth-child(2){ animation-delay:.15s; }
+  .dots circle:nth-child(3){ animation-delay:.3s; }
+  @keyframes dot{ 0%,100%{ transform:translateY(0); opacity:.4 } 50%{ transform:translateY(-4px); opacity:1 } }
+
+  /* ---- expressions (set on .stage) ---- */
+  .expr-excited .pupil{ transform:scaleY(1.18); }
+  .expr-curious #avatar{ transform:rotate(5deg); }
+  .expr-curious .pupil.up{ transform:translateY(-3px); }
+  .expr-gentle .pupil{ transform:scaleY(.6); }
+  .expr-surprised .pupil{ transform:scale(1.25); }
+  .expr-sad #avatar{ transform:rotate(-3deg); }
+  .expr-sad .pupil{ transform:translateY(3px) scaleY(.8); }
+  .expr-sad .cheek{ opacity:.35; }
+  .expr-happy .cheek, .expr-excited .cheek{ opacity:.95; }
+
+  /* ---- touch interactions (like the landing page) ---- */
+  .avatar-wrap{ display:inline-block; transform-origin:50% 70%; cursor:pointer; }
+  .avatar-wrap.boing{ animation:boing .7s cubic-bezier(.34,1.56,.4,1); }
+  @keyframes boing{ 0%{transform:scale(1,1)} 25%{transform:scale(1.08,.9)}
+    55%{transform:scale(.94,1.07)} 78%{transform:scale(1.02,.98)} 100%{transform:scale(1,1)} }
+  .look{ transform-box:fill-box; transform-origin:center; transition:transform .16s ease-out; }
+  .heart{ position:absolute; font-size:26px; pointer-events:none; will-change:transform,opacity;
+    animation:rise 1.1s ease-out forwards; }
+  @keyframes rise{ 0%{opacity:0; transform:translateY(8px) scale(.5)} 20%{opacity:1}
+    100%{opacity:0; transform:translateY(-90px) scale(1.15) rotate(12deg)} }
+
+  /* ---- talk button + status ---- */
+  .status{ min-height:26px; font-family:"Caveat",cursive; font-size:1.5rem;
+    color:var(--ink-soft); margin-bottom:12px; transition:opacity .2s; }
+  .talk{
+    width:96px; height:96px; border-radius:50%; border:none; cursor:pointer;
+    background:var(--persimmon); color:#FFFDF6; font-size:2rem;
+    box-shadow:0 12px 26px -10px rgba(214,79,49,.6); touch-action:none;
+    display:grid; place-items:center; transition:transform .12s, background .2s;
+  }
+  .talk:active, .talk.rec{ transform:scale(1.08); background:#B93F25; }
+  .talk.rec{ box-shadow:0 0 0 10px rgba(214,79,49,.18); }
+  .hint{ margin-top:10px; font-size:.82rem; color:var(--ink-soft); }
+  .caption{ min-height:20px; margin-top:6px; font-size:.9rem; color:var(--ink-soft);
+    max-width:340px; text-align:center; }
+  .reply{ min-height:24px; margin-top:2px; font-family:"Caveat",cursive;
+    font-size:1.3rem; color:var(--ink); max-width:340px; text-align:center; }
+
+  /* ---- name overlay ---- */
+  .overlay{ position:fixed; inset:0; background:var(--paper); display:none;
+    flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px; z-index:10; }
+  .overlay.show{ display:flex; }
+  .overlay h1{ font-weight:600; font-size:1.6rem; text-align:center; }
+  .overlay input{ font:inherit; font-size:1.2rem; padding:14px 20px; border-radius:999px;
+    border:2px solid #E8DAC8; background:#fff; text-align:center; width:min(80vw,300px); }
+  .overlay button{ font:inherit; font-size:1.1rem; padding:14px 34px; border-radius:999px;
+    border:none; background:var(--persimmon); color:#fff; cursor:pointer; }
+  .err{ color:var(--persimmon); font-size:.85rem; min-height:18px; text-align:center; }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="name">talking to <b>Megotchi</b> · <span id="who">friend</span></div>
+    <button class="link" id="change">change name</button>
+    <button class="link" id="reflectBtn" title="save memories for tonight">🌙 tuck in</button>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="avatar-wrap" id="avatarWrap">
+    <svg id="avatar" viewBox="0 0 340 340" role="img" aria-label="Megotchi">
+      <ellipse cx="170" cy="322" rx="96" ry="12" fill="rgba(70,53,44,.10)"/>
+      <!-- listening ring -->
+      <circle class="ring" cx="170" cy="176" r="128" fill="none" stroke="var(--honey)" stroke-width="6"/>
+      <!-- shell -->
+      <path d="M170 32 C250 32 296 96 296 176 C296 256 240 302 170 302 C100 302 44 256 44 176 C44 96 90 32 170 32 Z" fill="var(--honey)"/>
+      <path d="M96 82 L74 14 L150 50 Z" fill="var(--honey)"/>
+      <path d="M244 82 L266 14 L190 50 Z" fill="var(--honey)"/>
+      <!-- screen -->
+      <circle cx="170" cy="176" r="94" fill="var(--screen)"/>
+      <circle cx="170" cy="176" r="94" fill="none" stroke="rgba(70,53,44,.14)" stroke-width="3"/>
+      <!-- face -->
+      <g class="face">
+        <g class="eye l"><g class="look"><g class="pupil up"><rect x="128" y="150" width="17" height="30" rx="8.5" fill="var(--ink)"/><circle cx="133" cy="158" r="3.4" fill="var(--screen)"/></g></g></g>
+        <g class="eye r"><g class="look"><g class="pupil"><rect x="197" y="150" width="17" height="30" rx="8.5" fill="var(--ink)"/><circle cx="202" cy="158" r="3.4" fill="var(--screen)"/></g></g></g>
+        <ellipse class="cheek" cx="116" cy="196" rx="12" ry="8" fill="var(--blush)" opacity=".75"/>
+        <ellipse class="cheek" cx="224" cy="196" rx="12" ry="8" fill="var(--blush)" opacity=".75"/>
+        <path id="mouthSmile" d="M150 206 Q170 224 190 206" fill="none" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+        <path id="mouthSad" d="M150 218 Q170 202 190 218" fill="none" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" style="display:none"/>
+        <ellipse id="mouthOpen" cx="170" cy="212" rx="19" ry="15" fill="var(--ink)" style="display:none"/>
+      </g>
+      <!-- thinking dots -->
+      <g class="dots"><circle cx="238" cy="120" r="5" fill="var(--ink-soft)"/><circle cx="256" cy="112" r="5" fill="var(--ink-soft)"/><circle cx="274" cy="106" r="5" fill="var(--ink-soft)"/></g>
+    </svg>
+    </div>
+  </div>
+
+  <div style="text-align:center">
+    <div class="status" id="status">tap me, or hold the button to talk</div>
+    <button class="talk" id="talk" aria-label="hold to talk">🎙️</button>
+    <div class="hint">press & hold, then let go</div>
+    <div class="caption" id="caption"></div>
+    <div class="reply" id="replyCap"></div>
+  </div>
+
+  <!-- name overlay -->
+  <div class="overlay" id="overlay">
+    <h1>Hi! What's your name?</h1>
+    <input id="nameInput" autocomplete="off" autocapitalize="words" placeholder="type your name" maxlength="40">
+    <div class="err" id="nameErr"></div>
+    <button id="nameGo">Let's go →</button>
+  </div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const stage = $("#stage"), statusEl = $("#status"), caption = $("#caption"),
+        replyCap = $("#replyCap"),
+        talkBtn = $("#talk"), overlay = $("#overlay"), whoEl = $("#who");
+
+  // ---- identity ----
+  let child = localStorage.getItem("megotchi_child") || "";
+  function showName(){ whoEl.textContent = child || "friend"; }
+  function askName(){ overlay.classList.add("show"); $("#nameInput").value = child; $("#nameInput").focus(); }
+  $("#nameGo").onclick = () => {
+    const v = $("#nameInput").value.trim();
+    if (!v){ $("#nameErr").textContent = "tell me your name :)"; return; }
+    child = v; localStorage.setItem("megotchi_child", v);
+    overlay.classList.remove("show"); showName();
+    greet();   // typing the name is a gesture — Megotchi says hi by itself
+  };
+  $("#nameInput").addEventListener("keydown", e => { if (e.key === "Enter") $("#nameGo").click(); });
+  $("#change").onclick = askName;
+  if (!child) askName(); else showName();
+
+  // ---- funnel beacons (first-party, no trackers) ----
+  function beacon(kind){
+    try{
+      const fd = new FormData(); fd.append("kind", kind); fd.append("child", child || "");
+      fetch("/api/event", {method:"POST", body:fd, keepalive:true}).catch(()=>{});
+    }catch(e){}
+  }
+  beacon("page_open");
+
+  // ---- face state ----
+  const EXPR = ["neutral","happy","excited","curious","gentle","surprised","sad"];
+  let expr = "neutral";
+  function setExpr(e){
+    expr = EXPR.includes(e) ? e : "neutral";
+    EXPR.forEach(x => stage.classList.remove("expr-"+x));
+    stage.classList.add("expr-"+expr);
+  }
+  function mouth(mode){ // 'smile' | 'sad' | 'open'
+    $("#mouthSmile").style.display = mode === "smile" ? "" : "none";
+    $("#mouthSad").style.display   = mode === "sad"   ? "" : "none";
+    $("#mouthOpen").style.display  = mode === "open"  ? "" : "none";
+  }
+  function setState(s){ // idle | listening | thinking | speaking
+    stage.classList.remove("listening","thinking","speaking");
+    if (s !== "idle") stage.classList.add(s);
+    statusEl.textContent = {listening:"listening…", thinking:"thinking…",
+      speaking:"", idle:"tap me, or hold the button to talk"}[s] || "";
+    if (s === "speaking") mouth("open");
+    else if (s === "idle") mouth(expr === "sad" ? "sad" : "smile");
+  }
+  setState("idle");
+
+  // ---- audio: decode into a buffer + play via AudioContext (iOS-robust) ----
+  // Using an <audio> element routed through Web Audio gets blocked by iOS
+  // autoplay; decoding to an AudioBuffer and playing a BufferSource from a
+  // gesture-unlocked context is the reliable path — and still lip-syncs.
+  let actx;
+  function unlockAudio(){
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    try { // silent blip fully unlocks audio output on iOS
+      const b = actx.createBuffer(1, 1, 22050), s = actx.createBufferSource();
+      s.buffer = b; s.connect(actx.destination); s.start(0);
+    } catch (e) {}
+  }
+  function setMouthOpen(a){ $("#mouthOpen").style.setProperty("--mo", Math.max(.08, a).toFixed(3)); }
+  function decodeAudio(arraybuf){
+    return new Promise((res, rej) => {
+      const p = actx.decodeAudioData(arraybuf, res, rej);  // callback + promise forms
+      if (p && p.then) p.then(res, rej);
+    });
+  }
+  async function playReply(b64){
+    unlockAudio();
+    let audioBuf;
+    try {
+      const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      audioBuf = await decodeAudio(bytes.buffer);
+    } catch (e){ caption.textContent = "(couldn't play the reply)"; setState("idle"); return; }
+    const src = actx.createBufferSource(); src.buffer = audioBuf;
+    const analyser = actx.createAnalyser(); analyser.fftSize = 256;
+    src.connect(analyser); analyser.connect(actx.destination);
+    setState("speaking");
+    const buf = new Uint8Array(analyser.fftSize); let raf;
+    function loop(){
+      analyser.getByteTimeDomainData(buf);
+      let s = 0; for (let i=0;i<buf.length;i++){ const v=(buf[i]-128)/128; s+=v*v; }
+      setMouthOpen(Math.min(1, Math.sqrt(s/buf.length) * 3.5));
+      raf = requestAnimationFrame(loop);
+    }
+    src.onended = () => { cancelAnimationFrame(raf); setMouthOpen(.08); setState("idle"); };
+    src.start(0); loop();
+  }
+
+  // ---- mic + turn ----
+  let stream, recorder, chunks = [], mime = "", ext = "webm", busy = false, recT0 = 0;
+  function pickMime(){
+    for (const [t,e] of [["audio/webm;codecs=opus","webm"],["audio/webm","webm"],
+                         ["audio/mp4","mp4"],["audio/aac","m4a"],["audio/mpeg","mp3"]])
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported(t)) return [t,e];
+    return ["","webm"];
+  }
+  async function ensureMic(){
+    if (stream) return true;
+    try{ stream = await navigator.mediaDevices.getUserMedia({audio:true}); [mime,ext] = pickMime(); return true; }
+    catch(e){ beacon("mic_denied");
+      caption.textContent = "I need microphone permission (and an https:// link) to hear you."; return false; }
+  }
+  async function startRec(){
+    if (busy || overlay.classList.contains("show")) return;
+    unlockAudio();
+    if (!(await ensureMic())) return;
+    chunks = [];
+    recorder = new MediaRecorder(stream, mime ? {mimeType:mime} : undefined);
+    recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+    recorder.onstop = sendTurn;
+    recorder.start(); recT0 = Date.now();
+    talkBtn.classList.add("rec"); setState("listening");
+  }
+  function stopRec(){
+    talkBtn.classList.remove("rec");
+    if (recorder && recorder.state === "recording") recorder.stop();
+  }
+  async function sendTurn(){
+    const blob = new Blob(chunks, {type: mime || "audio/webm"});
+    if (blob.size < 1200){ setState("idle"); return; }  // too short
+    busy = true; setState("thinking");
+    try{
+      const fd = new FormData();
+      fd.append("child", child || "friend");
+      fd.append("audio", blob, "rec." + ext);
+      fd.append("secs", Math.min(120, (Date.now() - recT0) / 1000).toFixed(1));
+      const r = await fetch("/api/talk", {method:"POST", body:fd});
+      const j = await r.json();
+      if (!j.reply){
+        caption.textContent = j.note ? j.note
+                            : (j.heard ? ("you: " + j.heard)
+                                       : "I didn't catch that — hold and try again");
+        replyCap.textContent = "";
+        setState("idle"); busy = false; return;
+      }
+      caption.textContent = j.heard ? ("you: " + j.heard) : "";
+      replyCap.textContent = "Megotchi: " + j.reply;
+      setExpr(j.expression || "neutral");
+      if (j.audio) playReply(j.audio);
+      else setState("idle");
+    }catch(e){ caption.textContent = "hmm, I couldn't reach my brain. try again?";
+      replyCap.textContent = ""; setState("idle"); }
+    busy = false;
+  }
+
+  // ---- greeting: Megotchi speaks first (needs a gesture — iOS autoplay) ----
+  let greeted = false;
+  async function greet(){
+    if (greeted || !child || busy || overlay.classList.contains("show")) return;
+    greeted = true; unlockAudio(); busy = true; setState("thinking");
+    try{
+      const fd = new FormData();
+      fd.append("child", child);
+      fd.append("hour", new Date().getHours());   // phone's local time → daypart
+      const r = await fetch("/api/greet", {method:"POST", body:fd});
+      const j = await r.json();
+      if (j.reply && j.audio){
+        caption.textContent = "";
+        replyCap.textContent = "Megotchi: " + j.reply;
+        setExpr(j.expression || "happy"); playReply(j.audio);
+      }
+      else { setState("idle"); }
+    }catch(e){ setState("idle"); }
+    busy = false;
+  }
+
+  // hold-to-talk (pointer covers touch + mouse)
+  talkBtn.addEventListener("pointerdown", e => { e.preventDefault(); startRec(); });
+  talkBtn.addEventListener("pointerup",   e => { e.preventDefault(); stopRec(); });
+  talkBtn.addEventListener("pointercancel", stopRec);
+  talkBtn.addEventListener("pointerleave", stopRec);
+
+  // tuck in = nightly reflection
+  $("#reflectBtn").onclick = async () => {
+    const fd = new FormData(); fd.append("child", child || "friend");
+    statusEl.textContent = "tucking in…";
+    try{ await fetch("/api/reflect", {method:"POST", body:fd}); caption.textContent = "memories saved 🌙"; }
+    catch(e){}
+    setState("idle");
+  };
+
+  // ---- touch interactions: eyes follow the finger, boing + hearts on tap ----
+  const avatarWrap = $("#avatarWrap"), avatar = $("#avatar");
+  const looks = document.querySelectorAll(".look");
+  let lookTimer = null;
+  const busyFace = () => stage.classList.contains("thinking") || stage.classList.contains("speaking");
+
+  function lookAt(x, y){
+    if (busyFace()) return;                       // eyes are busy (up / lip-sync)
+    const r = avatar.getBoundingClientRect();
+    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * 0.5);
+    const d = Math.hypot(dx, dy) || 1, m = Math.min(d, 150) / 150 * 6;   // max 6px
+    const tx = (dx / d * m).toFixed(1), ty = (dy / d * m).toFixed(1);
+    looks.forEach(l => l.style.transform = `translate(${tx}px, ${ty}px)`);
+    clearTimeout(lookTimer);
+    lookTimer = setTimeout(() => { looks.forEach(l => l.style.transform = ""); lookTimer = null; }, 2600);
+  }
+  window.addEventListener("pointermove", e => lookAt(e.clientX, e.clientY), {passive:true});
+
+  function boing(){ avatarWrap.classList.remove("boing"); void avatarWrap.offsetWidth; avatarWrap.classList.add("boing"); }
+  function popHearts(x, y){
+    for (let i = 0; i < 3; i++){
+      const h = document.createElement("span");
+      h.className = "heart"; h.textContent = "💛";
+      h.style.left = (x - 13 + (i - 1) * 16) + "px";
+      h.style.top  = (y - 24) + "px";
+      h.style.animationDelay = (i * .09) + "s";
+      stage.appendChild(h);
+      setTimeout(() => h.remove(), 1300);
+    }
+  }
+  let happyTimer;
+  avatarWrap.addEventListener("pointerdown", e => {
+    greet();                                       // first tap of a session → it greets you
+    boing();
+    const r = stage.getBoundingClientRect();
+    popHearts(e.clientX - r.left, e.clientY - r.top);
+    if (busyFace()) return;                        // don't fight lip-sync / thinking
+    const prev = expr; setExpr("happy");
+    clearTimeout(happyTimer); happyTimer = setTimeout(() => setExpr(prev), 800);
+  });
+
+  // idle micro-glances when nobody is steering the eyes
+  setInterval(() => {
+    if (busyFace() || lookTimer) return;
+    const dx = (Math.random() * 8 - 4).toFixed(1);
+    looks.forEach(l => l.style.transform = `translateX(${dx}px)`);
+    setTimeout(() => { if (!lookTimer) looks.forEach(l => l.style.transform = ""); }, 1400);
+  }, 4200);
+})();
+</script>
+</body>
+</html>

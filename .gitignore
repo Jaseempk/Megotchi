@@ -1,0 +1,14 @@
+data/
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# watch: secrets, vendor clone, build artifacts, local voice recordings
+watch/*/secrets.h
+watch/vendor/
+watch/ref/
+watch/build/
+watch/*/build/
+watch/captures/
+*.pcm

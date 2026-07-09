@@ -1,0 +1,12 @@
+# Voice MVP (Phase A) — talk to Megotchi on the Mac.
+# The memory engine core needs none of these; only the voice cascade does.
+openai>=1.40          # LLM + gpt-4o-mini-transcribe STT
+elevenlabs>=1.5       # TTS
+# --- web/phone UI (voice.server) ---
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9   # form/file uploads
+# --- Mac push-to-talk (voice.run_mac) only ---
+sounddevice>=0.4      # mic capture (macOS: needs PortAudio, `brew install portaudio`)
+soundfile>=0.12       # write WAV
+numpy>=1.24

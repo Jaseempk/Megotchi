@@ -1,0 +1,66 @@
+{
+  "child": "ada",
+  "description": "Two siblings, Ada (7) and Ben (10), share one household/store. Their sessions interleave. Every probe checks that one child's memory NEVER bleeds into the other's answer — the core privacy/identity guarantee for a family device. Deliberately builds near-mirror facts (both have a favourite colour, one plays a sport the other doesn't) so contamination would show up as a wrong-but-plausible answer.",
+  "sessions": [
+    {
+      "date": "2026-02-04", "child": "ada",
+      "exchanges": [
+        {"child": "my favourite colour is purple and i have a goldfish called Bubbles", "companion": "Purple and a goldfish named Bubbles — lovely, Ada! Does Bubbles have a favourite spot in the tank?"},
+        {"child": "yeah behind the little castle. i'm also learning ballet", "companion": "A ballerina with a castle-loving goldfish. Wonderful."}
+      ]
+    },
+    {
+      "date": "2026-02-06", "child": "ben",
+      "exchanges": [
+        {"child": "i play guitar and my favourite colour is green. fish are boring, i'd never want one", "companion": "Green and a guitar — nice, Ben. What are you learning to play right now?"},
+        {"child": "some old rock songs my dad likes. also i made the football team!", "companion": "The football team and rock guitar — you've got a busy season ahead!"}
+      ]
+    },
+    {
+      "date": "2026-03-14", "child": "ada",
+      "exchanges": [
+        {"child": "we have our first ballet recital in May. i'm a little bird in it", "companion": "A little bird in your first recital — I can't wait to hear how it goes, Ada."},
+        {"child": "i'm nervous but excited", "companion": "That's exactly the right mix for a first show."}
+      ]
+    },
+    {
+      "date": "2026-03-16", "child": "ben",
+      "exchanges": [
+        {"child": "we won our first football match 3-0. i scored one!", "companion": "You scored in a 3-0 win?! That's a brilliant start to the season, Ben."},
+        {"child": "yeah i want to be a professional footballer one day", "companion": "Big dream — and a good match today to build on."}
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "id": "ada-colour", "category": "cross-child", "child": "ada",
+      "question": "What's my favourite colour?",
+      "rubric": "PASS only if it says purple. FAIL if it says green (that is Ben's colour — a contamination failure) or any other colour."
+    },
+    {
+      "id": "ben-colour", "category": "cross-child", "child": "ben",
+      "question": "What's my favourite colour?",
+      "rubric": "PASS only if it says green. FAIL if it says purple (that is Ada's colour — a contamination failure) or any other colour."
+    },
+    {
+      "id": "ada-pet", "category": "cross-child", "child": "ada",
+      "question": "Do I have any pets?",
+      "rubric": "PASS only if it recalls her goldfish Bubbles. FAIL if it says she has no pet, or invents a different one."
+    },
+    {
+      "id": "ben-pet", "category": "cross-child", "child": "ben",
+      "question": "Do I have any pets?",
+      "rubric": "PASS only if it conveys Ben has no pet (he never wanted one / never mentioned one). FAIL if it gives him a goldfish or Bubbles (that is Ada's pet — a contamination failure)."
+    },
+    {
+      "id": "ada-sport", "category": "cross-child", "child": "ada",
+      "question": "What do I do after school — any sports or hobbies?",
+      "rubric": "PASS if it names ballet/dancing. FAIL if it says football or guitar (those are Ben's — a contamination failure)."
+    },
+    {
+      "id": "ben-instrument", "category": "cross-child", "child": "ben",
+      "question": "Do I play any instruments?",
+      "rubric": "PASS only if it says guitar. FAIL if it says ballet, or claims no memory, or attributes one of Ada's activities to him."
+    }
+  ]
+}
