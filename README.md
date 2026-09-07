@@ -1,8 +1,12 @@
 # Megotchi — Phase 0: The Soul
 
-The memory engine and its test rig. See `../MEGOTCHI-STRATEGY.md` for the full
-plan; this directory is **Phase 0**: *a companion that remembers your kids
-across weeks and demonstrably gets better because of it.*
+A memory engine for an AI companion, and the eval harness that proves it
+remembers. Facts are extracted from conversation, reconciled bi-temporally,
+and retrieved by recency and importance, with an LLM judge grading recall over
+synthetic multi-month storylines.
+
+This is **Phase 0**: *a companion that remembers your kids across weeks and
+demonstrably gets better because of it.*
 
 **`FINDINGS.md`** documents the first three eval runs (5/6 → 4/6 → 6/6), the
 eleven failure classes they surfaced, the model-vs-architecture attribution,
@@ -36,7 +40,7 @@ export MEGOTCHI_LLM=ollama:qwen3:4b
 export MEGOTCHI_LLM=anthropic:claude-sonnet-4-6
 ```
 
-Talk to it (from this directory):
+Talk to it (from the repo root):
 
 ```bash
 python -m companion.run --child maggie
@@ -101,7 +105,7 @@ sessions and probes may set `child` to test sibling isolation.
   audit surface and, later, the deletion/review UI's source of truth.
 - **The engine never imports anything provider-specific outside `llm.py`.**
 
-## Phase 0 exit criteria (from the strategy doc)
+## Phase 0 exit criteria
 
 - [ ] 30 days of real family use (founders' kids), diary-study notes kept
 - [ ] Memory eval green, including fabrication probes
@@ -113,5 +117,5 @@ sessions and probes may set `child` to test sibling isolation.
 - Embedding-based relevance in `retrieve.py` (only needed when facts > ~60)
 - Hindsight / Mem0 OSS bake-off against this baseline on the same eval
 - LongMemEval temporal-reasoning + knowledge-updates splits wired into `evals/`
-- Voice: plug this engine into `../vision-companion/companion_live.py`
+- Voice: plug this engine into the live voice pipeline in `voice/`
 - Nightly reflection as a real scheduled job (launchd) instead of `/reflect`
